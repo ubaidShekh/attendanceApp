@@ -15,6 +15,7 @@ var checkAttendancerouter = require("./routes/chckAttendance");
 const User = require("./Modal/User");
 const Attendance = require("./routes/attendance");
 const mongoose = require("mongoose");
+var cors = require("cors");
 
 var app = express();
 
@@ -24,7 +25,7 @@ app.use((req, res, next) => {
   res.set("Expires", "0");
   next();
 });
-
+app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
