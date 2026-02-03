@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
@@ -11,8 +15,8 @@ var checkAttendancerouter = require("./routes/chckAttendance");
 const User = require("./Modal/User");
 const Attendance = require("./routes/attendance");
 const mongoose = require("mongoose");
+
 var app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -27,13 +31,4 @@ app.use("/login", loginRouter);
 app.use("/attendance", Attendance);
 app.use("/sendAttendance", checkAttendancerouter);
 
-app.listen(PORT, () => {
-  console.log("server is runing");
-  const mongodburl =
-    "mongodb+srv://ubaidjmi202:12345678ubaidjmi202@cluster0.g9k3jpw.mongodb.net/?appName=Cluster0";
-  // Connect to MongoDB Atlas
-  mongoose
-    .connect(mongodburl)
-    .then(() => console.log("MongoDB connected"))
-    .catch((err) => console.log("MongoDB connection error:", err));
-});
+module.exports = app;

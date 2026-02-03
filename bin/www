@@ -1,19 +1,25 @@
 #!/usr/bin/env node
 
+// ADD THIS AT THE VERY TOP - Load environment variables
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 /**
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('attendance-api:server');
-var http = require('http');
+var app = require("../app");
+var debug = require("debug")("attendance-api:server");
+var http = require("http");
+var mongoose = require("mongoose");
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+var port = normalizePort(process.env.PORT || "3000");
+app.set("port", port);
 
 /**
  * Create HTTP server.
@@ -25,9 +31,39 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+server.listen(port, async () => {
+  console.log(`🚀 Server started on port ${port}`);
+
+  const mongodburl =
+    process.env.MONGODB_URI ||
+    "mongodb+srv://ubaidjmi202:12345678ubaidjmi202@cluster0.g9k3jpw.mongodb.net/attendance?retryWrites=true&w=majority"; // Added database name
+
+  // ADD VALIDATION - check if MONGODB_URI exists
+  if (!mongodburl) {
+    console.error("❌ ERROR: MONGODB_URI environment variable is not set!");
+    console.log("💡 Create a .env file with MONGODB_URI for local development");
+    console.log("💡 Or set it in Render environment variables for production");
+    console.log("⚠️ Server running without database connection");
+    return;
+  }
+
+  console.log("🔗 Connecting to MongoDB...");
+
+  try {
+    // For Mongoose 6+, remove deprecated options
+    await mongoose.connect(mongodburl);
+    console.log("✅ MongoDB connected successfully");
+    console.log(`📊 Database: ${mongoose.connection.name}`);
+    console.log(`🏠 Host: ${mongoose.connection.host}`);
+    console.log(`📈 Ready State: ${mongoose.connection.readyState}`);
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err.message);
+    console.log("⚠️ Server will continue running without database");
+  }
+});
+
+server.on("error", onError);
+server.on("listening", onListening);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -54,22 +90,20 @@ function normalizePort(val) {
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
+  if (error.syscall !== "listen") {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
       process.exit(1);
       break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
       process.exit(1);
       break;
     default:
@@ -83,8 +117,7 @@ function onError(error) {
 
 function onListening() {
   var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  debug("Listening on " + bind);
+  console.log("👂 Server listening on " + bind);
 }
