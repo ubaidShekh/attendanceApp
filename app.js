@@ -15,6 +15,7 @@ var checkAttendancerouter = require("./routes/chckAttendance");
 const User = require("./Modal/User");
 const Attendance = require("./routes/attendance");
 const mongoose = require("mongoose");
+const totalEmployRouter = require("./routes/totalemplot");
 var cors = require("cors");
 
 var app = express();
@@ -38,5 +39,6 @@ app.use("/register", createuserRouter);
 app.use("/login", loginRouter);
 app.use("/attendance", Attendance);
 app.use("/sendAttendance", checkAttendancerouter);
+app.use("/totalemploy", totalEmployRouter);
 
 module.exports = app;
