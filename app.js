@@ -17,6 +17,8 @@ const Attendance = require("./routes/attendance");
 const mongoose = require("mongoose");
 const totalEmployRouter = require("./routes/totalemplot");
 var cors = require("cors");
+const attendance = require("./Modal/CheckAttendance");
+const { isDataView } = require("util/types");
 
 var app = express();
 
@@ -40,5 +42,9 @@ app.use("/login", loginRouter);
 app.use("/attendance", Attendance);
 app.use("/sendAttendance", checkAttendancerouter);
 app.use("/totalemploy", totalEmployRouter);
+app.use("/addModal", async (req, res) => {
+  const data = req.body;
+  console.log(data);
+});
 
 module.exports = app;
