@@ -46,5 +46,5 @@ app.use("/totalemploy", totalEmployRouter);
 app.use("/addBranch", addBranchRouter);
 
 app.use("/fetchuser", fetchUserRouter);
-app.use("allAtendance", allAtendanceRouter);
+app.use("/allAtendance", allAtendanceRouter);
 module.exports = app;
