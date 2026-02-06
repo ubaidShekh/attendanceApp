@@ -15,11 +15,15 @@ totalEmployRouter.get("/", async (req, res) => {
   const number = attendance.map((item) => {
     return item.branch.length;
   });
+  const todaysAttendance = attendance.map((item) => {
+    return item.branch;
+  });
 
   res.json({
     totalemploy: user.length,
     branch: number,
     todayspunch: todaysPunch.length / 2,
+    todaysAttendance: todaysAttendance,
   });
 });
 
