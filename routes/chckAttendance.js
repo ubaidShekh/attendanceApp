@@ -18,16 +18,23 @@ checkAttendancerouter.post("/", async (req, res) => {
       });
     }
 
-    const { employeeId, name, time, date, punchType } = req.body;
+    const { employeeId, name, time, date, punchType, image } = req.body;
 
     // Validate required fields
-    if (!employeeId || !name || !time || !date || !punchType) {
+    if (!employeeId || !name || !time || !date || !punchType || !image) {
       console.log("❌ Error: Missing required fields");
-      console.log("Received:", { employeeId, name, time, date, punchType });
+      console.log("Received:", {
+        employeeId,
+        name,
+        time,
+        date,
+        punchType,
+        image,
+      });
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
-        required: ["employeeId", "name", "time", "date", "punchType"],
+        required: ["employeeId", "name", "time", "date", "punchType", "image"],
         received: req.body,
       });
     }
@@ -41,6 +48,7 @@ checkAttendancerouter.post("/", async (req, res) => {
       time,
       date,
       punchType,
+      image,
     });
 
     console.log("💾 Saving to database...");
@@ -58,6 +66,7 @@ checkAttendancerouter.post("/", async (req, res) => {
         date: attendance.date,
         punchType: attendance.punchType,
         createdAt: attendance.createdAt,
+        image: attendance.image,
       },
     });
 
