@@ -89,9 +89,7 @@ checkAttendancerouter.get("/", async (req, res) => {
   try {
     console.log("📡 GET /sendAttendance received");
 
-    const attendance = await CheckAttendance.find()
-      .sort({ createdAt: -1 })
-      .limit(10);
+    const attendance = await CheckAttendance.find().sort({ createdAt: -1 });
 
     res.json({
       success: true,
