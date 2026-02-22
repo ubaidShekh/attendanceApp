@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const loginuserSchema = new mongoose.Schema({
-  email: {
+  employeeId: {
     type: String,
     //required: [true, "Email is required"],
     //unique: true,

@@ -9,22 +9,22 @@ const SECRET_KEY = process.env.JWT_SECRET || "mySimpleSecretKey123";
 
 loginRouter.post("/", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { employeeId, password } = req.body;
 
     // Validate input
-    if (!email || !password) {
+    if (!employeeId || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required",
+        message: "Employee ID and password are required",
       });
     }
 
-    // Find user by email (case-insensitive)
+    // Find user by employeeId (case-insensitive)
     const user = await User.findOne({
-      email: email.toLowerCase().trim(),
+      employeeId: employeeId.toUpperCase(),
     });
 
-    if (email !== user.email) {
+    if (!user) {
       return res.status(401).json({
         success: false,
         message: "Invalid credentials",
