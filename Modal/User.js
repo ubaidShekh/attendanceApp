@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
-  fullName: {
-    type: String,
-    //  required: [true, "Full name is required"],
-    // trim: true,
-    // minlength: [2, "Full name must be at least 2 characters"],
-  },
+  // fullName: {
+  // type: String,
+  //  required: [true, "Full name is required"],
+  // trim: true,
+  // minlength: [2, "Full name must be at least 2 characters"],
+  //},
   employeeId: {
     type: String,
     // required: [true, "Employee ID is required"],
@@ -19,17 +19,17 @@ const userSchema = new mongoose.Schema({
     //"Employee ID must start with EMP followed by numbers",
     // ],
   },
-  email: {
-    type: String,
-    //required: [true, "Email is required"],
-    unique: true,
-    /// lowercase: true,
-    // trim: true,
-    // match: [
-    //   /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-    //   "Please enter a valid email",
-    // ],
-  },
+  // email: {
+  // type: String,
+  //required: [true, "Email is required"],
+  // unique: true,
+  /// lowercase: true,
+  // trim: true,
+  // match: [
+  //   /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+  //   "Please enter a valid email",
+  // ],
+  //  },
   phone: {
     type: String,
     //  trim: true,
