@@ -20,6 +20,8 @@ const fetchUserRouter = require("./routes/fetchUser");
 const allAtendanceRouter = require("./routes/allAtendance");
 var cors = require("cors");
 const { isDataView } = require("util/types");
+const attendanceArabicRouter = require("./routes/AttendanceArabic");
+const CheckAttendanceArabic = require("./routes/checkAttendanceArabic");
 
 var app = express();
 
@@ -47,4 +49,7 @@ app.use("/addBranch", addBranchRouter);
 
 app.use("/fetchuser", fetchUserRouter);
 app.use("/allAtendance", allAtendanceRouter);
+//arabic version
+app.use("/attendanceArabic", attendanceArabicRouter);
+app.use("/sendAttendanceArabic", CheckAttendanceArabic);
 module.exports = app;
