@@ -22,7 +22,7 @@ var cors = require("cors");
 const { isDataView } = require("util/types");
 const attendanceArabicRouter = require("./routes/AttendanceArabic");
 const CheckAttendanceArabic = require("./routes/checkAttendanceArabic");
-
+const verifyFaceRouter = require("./routes/verifyFace");
 var app = express();
 
 app.use((req, res, next) => {
@@ -52,4 +52,5 @@ app.use("/allAtendance", allAtendanceRouter);
 //arabic version
 app.use("/attendanceArabic", attendanceArabicRouter);
 app.use("/sendAttendanceArabic", CheckAttendanceArabic);
+app.use("/verify-face", verifyFaceRouter);
 module.exports = app;
