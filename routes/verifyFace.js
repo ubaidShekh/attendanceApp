@@ -5,7 +5,7 @@ const axios = require("axios");
 const FormData = require("form-data");
 
 // Python face comparison endpoint
-const PYTHON_API_URL = "https://b366-121-46-85-114.ngrok-free.app/compare-face";
+const PYTHON_API_URL = "https://5qbfjszb-8000.inc1.devtunnels.ms/compare-face";
 
 router.post("/", async (req, res) => {
   try {
