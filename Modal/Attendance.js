@@ -7,6 +7,8 @@ const branchSchema = new mongoose.Schema({
   address: String,
   employ: String,
   range: String,
+  InTime: String,
+  OutTime: String,
 });
 
 const attendanceSchema = new mongoose.Schema(
