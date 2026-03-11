@@ -21,7 +21,7 @@ checkAttendancerouter.post("/", async (req, res) => {
     const { employeeId, name, time, date, punchType, image } = req.body;
 
     // Validate required fields
-    if (!employeeId || !name || !time || !date || !punchType || !image) {
+    if (!employeeId || !name || !time || !date || !punchType) {
       console.log("❌ Error: Missing required fields");
       console.log("Received:", {
         employeeId,

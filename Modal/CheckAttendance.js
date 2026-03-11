@@ -27,7 +27,7 @@ const attendanceSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  image: { type: String, required: true },
+  image: { type: String },
 });
 
 const CheckAttendance = mongoose.model("CheckAttendance", attendanceSchema);
