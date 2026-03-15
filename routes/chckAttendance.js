@@ -1,7 +1,41 @@
-// routes/chckAttendance.js
 const express = require("express");
 const checkAttendancerouter = express.Router();
 const CheckAttendance = require("../Modal/CheckAttendance");
+
+// ---------- Helper: convert "hh:mm AM/PM" or "HH:mm" to minutes since midnight ----------
+function parseTimeToMinutes(timeStr) {
+  if (!timeStr) return 0;
+  // try 12-hour format with AM/PM
+  const match12 = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (match12) {
+    let hours = parseInt(match12[1], 10);
+    const minutes = parseInt(match12[2], 10);
+    const ampm = match12[3].toUpperCase();
+    if (ampm === "PM" && hours !== 12) hours += 12;
+    if (ampm === "AM" && hours === 12) hours = 0;
+    return hours * 60 + minutes;
+  }
+  // try 24-hour format "HH:mm"
+  const match24 = timeStr.match(/(\d{1,2}):(\d{2})/);
+  if (match24) {
+    const hours = parseInt(match24[1], 10);
+    const minutes = parseInt(match24[2], 10);
+    return hours * 60 + minutes;
+  }
+  return 0; // fallback
+}
+
+// ---------- Helper: get previous date string in "MM/DD/YYYY" (assuming US locale) ----------
+function getPreviousDateString(dateStr, daysAgo) {
+  // dateStr format: "MM/DD/YYYY"
+  const [month, day, year] = dateStr.split("/").map(Number);
+  const date = new Date(year, month - 1, day); // month is 0-indexed
+  date.setDate(date.getDate() - daysAgo);
+  const prevMonth = String(date.getMonth() + 1).padStart(2, "0");
+  const prevDay = String(date.getDate()).padStart(2, "0");
+  const prevYear = date.getFullYear();
+  return `${prevMonth}/${prevDay}/${prevYear}`;
+}
 
 // POST - Save attendance
 checkAttendancerouter.post("/", async (req, res) => {
@@ -41,7 +75,81 @@ checkAttendancerouter.post("/", async (req, res) => {
 
     console.log("✅ Validated data successfully");
 
-    // Create new attendance record
+    // ---------- NEW LOGIC: Consecutive late days → absent on third day ----------
+    let dayStatus = "present"; // default
+
+    if (punchType === "IN") {
+      // 1. Check if this is the first IN of the day for this employee
+      const existingInCount = await CheckAttendance.countDocuments({
+        employeeId,
+        date,
+        punchType: "IN",
+      });
+
+      const isFirstIn = existingInCount === 0;
+
+      if (isFirstIn) {
+        console.log(`🔍 First IN of the day for employee ${employeeId}`);
+
+        // 2. Determine if current punch is late (after 9:15 AM)
+        const currentMinutes = parseTimeToMinutes(time);
+        const cutoff = 9 * 60 + 15; // 9:15 = 555 minutes
+
+        if (currentMinutes > cutoff) {
+          // Current punch is late → temporarily mark as late
+          dayStatus = "late";
+          console.log(`⏰ Current IN is late (${time})`);
+
+          // 3. Check previous two days for consecutive lateness
+          const yesterday = getPreviousDateString(date, 1);
+          const dayBeforeYesterday = getPreviousDateString(date, 2);
+
+          console.log(
+            `📅 Checking previous days: ${yesterday}, ${dayBeforeYesterday}`,
+          );
+
+          // Helper to get first IN of a given date and check if it was late
+          const wasLateOnDate = async (targetDate) => {
+            const records = await CheckAttendance.find({
+              employeeId,
+              date: targetDate,
+              punchType: "IN",
+            }).sort({ createdAt: 1 }); // earliest first
+            if (records.length === 0) return false; // no IN on that day
+            const firstIn = records[0];
+            const mins = parseTimeToMinutes(firstIn.time);
+            return mins > cutoff;
+          };
+
+          const wasLateYesterday = await wasLateOnDate(yesterday);
+          const wasLateDayBefore = await wasLateOnDate(dayBeforeYesterday);
+
+          console.log(
+            `📊 Was late yesterday: ${wasLateYesterday}, day before: ${wasLateDayBefore}`,
+          );
+
+          if (wasLateYesterday && wasLateDayBefore) {
+            // Three consecutive late days (including today) → mark today as ABSENT
+            dayStatus = "absent";
+            console.log(
+              "🚨 THREE CONSECUTIVE LATE DAYS! Marking today as ABSENT.",
+            );
+          } else {
+            console.log("✅ Not three consecutive late days. Keeping as late.");
+          }
+        } else {
+          console.log(`✅ First IN is on time (${time}) – status: present`);
+        }
+      } else {
+        console.log(
+          "⏩ Not the first IN of the day – skipping late/absent logic.",
+        );
+      }
+    } else {
+      console.log("⏩ OUT punch – no late/absent logic applied.");
+    }
+
+    // Create new attendance record (with dayStatus)
     const attendance = new CheckAttendance({
       employeeId,
       name,
@@ -49,9 +157,10 @@ checkAttendancerouter.post("/", async (req, res) => {
       date,
       punchType,
       image,
+      dayStatus, // <-- new field
     });
 
-    console.log("💾 Saving to database...");
+    console.log("💾 Saving to database with dayStatus:", dayStatus);
     await attendance.save();
     console.log("✅ Saved to database. ID:", attendance._id);
 
@@ -67,6 +176,7 @@ checkAttendancerouter.post("/", async (req, res) => {
         punchType: attendance.punchType,
         createdAt: attendance.createdAt,
         image: attendance.image,
+        dayStatus: attendance.dayStatus, // included in response
       },
     });
 

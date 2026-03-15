@@ -1,4 +1,3 @@
-// Modal/CheckAttendance.js
 const mongoose = require("mongoose");
 
 const attendanceSchema = new mongoose.Schema({
@@ -28,6 +27,12 @@ const attendanceSchema = new mongoose.Schema({
     default: Date.now,
   },
   image: { type: String },
+  // NEW field for attendance status
+  dayStatus: {
+    type: String,
+    enum: ["present", "late", "absent"],
+    default: "present",
+  },
 });
 
 const CheckAttendanceArabic = mongoose.model(
