@@ -1,6 +1,7 @@
 const express = require("express");
 const addBranchRouter = express.Router();
 const attendance = require("../Modal/Attendance");
+const attendanceArabic = require("../Modal/AttendanceArabic");
 
 addBranchRouter.post("/", async (req, res) => {
   try {
@@ -16,8 +17,9 @@ addBranchRouter.post("/", async (req, res) => {
 
     // Or if you want to find the first/main document
     const attendanceDoc = await attendance.findOne();
+    const attendanceDocArabic = await attendanceArabic.findOne();
 
-    if (!attendanceDoc) {
+    if (!attendanceDoc || !attendanceDocArabic) {
       return res.status(404).json({
         success: false,
         message: "No attendance document found",
@@ -34,13 +36,23 @@ addBranchRouter.post("/", async (req, res) => {
       range: branchForm.range?.trim() || "",
     };
 
+    const newBranchArabic = {
+      title: branchForm.title?.trim() || "",
+      address: branchForm.address?.trim() || "",
+      latitude: branchForm.lat?.trim() || "",
+      longitude: branchForm.long?.trim() || "",
+      employ: branchForm.employees?.trim() || "",
+      range: branchForm.range?.trim() || "",
+    };
     console.log("🆕 New branch to add:", newBranch);
 
     // ✅ Add to branch array
     attendanceDoc.branch.push(newBranch);
+    attendanceDocArabic.branch.push(newBranchArabic);
 
     // ✅ Save to database
     const savedData = await attendanceDoc.save();
+    await attendanceDocArabic.save();
 
     console.log(
       `✅ Saved successfully! New total branches: ${savedData.branch.length}`,
