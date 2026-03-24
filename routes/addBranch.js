@@ -2,7 +2,7 @@ const express = require("express");
 const addBranchRouter = express.Router();
 const attendance = require("../Modal/Attendance");
 
-addBranchRouter.get("/", async (req, res) => {
+addBranchRouter.post("/", async (req, res) => {
   try {
     console.log("✅ /addBranch called via ngrok");
     console.log("📦 Full request body:", JSON.stringify(req.body, null, 2));
