@@ -23,6 +23,8 @@ const { isDataView } = require("util/types");
 const attendanceArabicRouter = require("./routes/AttendanceArabic");
 const CheckAttendanceArabic = require("./routes/checkAttendanceArabic");
 const verifyFaceRouter = require("./routes/verifyFace");
+const addEmploye = require("./routes/addEmploye");
+
 var app = express();
 
 app.use((req, res, next) => {
@@ -54,4 +56,5 @@ app.use("/allAtendance", allAtendanceRouter);
 app.use("/attendanceArabic", attendanceArabicRouter);
 app.use("/sendAttendanceArabic", CheckAttendanceArabic);
 app.use("/verify-face", verifyFaceRouter);
+app.use("/addEmploye", addEmploye);
 module.exports = app;
