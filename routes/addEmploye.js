@@ -11,6 +11,7 @@ addEmployerouter.post("/", async (req, res) => {
 
     // Extract fields from request bodyy
     const {
+      EmployeeId,
       name,
       nameArabic,
       designation,
@@ -25,7 +26,14 @@ addEmployerouter.post("/", async (req, res) => {
     } = req.body;
 
     // Basic validation
-    if (!name || !designation || !department || !branch || !salary) {
+    if (
+      !EmployeeId ||
+      !name ||
+      !designation ||
+      !department ||
+      !branch ||
+      !salary
+    ) {
       return res.status(400).json({
         error:
           "Missing required fields: name, designation, department, branch, salary",
@@ -34,6 +42,7 @@ addEmployerouter.post("/", async (req, res) => {
 
     // Create new employee document
     const newEmployee = new Employee({
+      EmployeeId,
       name,
       nameArabic,
       designation,
@@ -50,7 +59,7 @@ addEmployerouter.post("/", async (req, res) => {
     // Save to MongoDB
     const savedEmployee = await newEmployee.save();
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Employee added successfully",
       employee: savedEmployee,
     });

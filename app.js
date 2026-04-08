@@ -57,4 +57,8 @@ app.use("/attendanceArabic", attendanceArabicRouter);
 app.use("/sendAttendanceArabic", CheckAttendanceArabic);
 app.use("/verify-face", verifyFaceRouter);
 app.use("/addEmploye", addEmploye);
+app.use("/checkEmployee", async (req, res) => {
+  const { EmployeeId } = req.body;
+  console.log("🔍 Checking EmployeeId:", EmployeeId);
+});
 module.exports = app;
