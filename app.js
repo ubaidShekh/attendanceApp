@@ -25,6 +25,9 @@ const CheckAttendanceArabic = require("./routes/checkAttendanceArabic");
 const verifyFaceRouter = require("./routes/verifyFace");
 const addEmploye = require("./routes/addEmploye");
 
+//IOT import
+const UserIOT = require("./routes/routesIOT/UserIOT");
+
 var app = express();
 
 app.use((req, res, next) => {
@@ -61,4 +64,7 @@ app.use("/checkEmployee", async (req, res) => {
   const { EmployeeId } = req.body;
   console.log("🔍 Checking EmployeeId:", EmployeeId);
 });
+
+//IOT APP
+app.use("/iot/createuser", UserIOT);
 module.exports = app;
