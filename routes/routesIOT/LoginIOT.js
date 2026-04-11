@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs"); // IMPORTANT: Add bcrypt
 const jwt = require("jsonwebtoken");
-const User = require("../Modal/ModalIOT/UserIOT");
+const User = require("../../Modal/ModalIOT/UserIOT");
 
 const loginRouterIOT = express.Router();
 
@@ -46,7 +46,6 @@ loginRouterIOT.post("/", async (req, res) => {
       {
         userId: user._id,
         email: user.email,
-        employeeId: user.employeeId,
       },
       SECRET_KEY,
       { expiresIn: "24h" }, // Increased to 24h
@@ -60,12 +59,8 @@ loginRouterIOT.post("/", async (req, res) => {
       user: {
         id: user._id,
         fullName: user.fullName,
-        employeeId: user.employeeId,
+
         email: user.email,
-        phone: user.phone || "",
-        role: user.role || "employee",
-        branch: user.branch || "Head Office",
-        lastLogin: user.lastLogin,
       },
     });
   } catch (err) {
@@ -77,4 +72,4 @@ loginRouterIOT.post("/", async (req, res) => {
   }
 });
 
-module.exports = loginRouter;
+module.exports = loginRouterIOT;
