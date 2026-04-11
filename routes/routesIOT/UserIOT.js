@@ -1,6 +1,6 @@
 const express = require("express");
 const createuserRouterIOT = express.Router();
-const UserIOT = require("../Modal/ModalIOT/UserIOT");
+const UserIOT = require("../../Modal/ModalIOT/UserIOT");
 
 createuserRouterIOT.post("/", async (req, res) => {
   try {
