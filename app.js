@@ -67,4 +67,5 @@ app.use("/checkEmployee", async (req, res) => {
 
 //IOT APP
 app.use("/iot/createuser", UserIOT);
+app.use("/iot/login", require("./routes/routesIOT/LoginIOT"));
 module.exports = app;
