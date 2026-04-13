@@ -84,11 +84,14 @@ app.use("/iot/changetaskstatus", async (req, res) => {
 
     // 🔄 Step 2: Status logic
     let newStatus = task.status;
+    let priority = task.priority;
 
     if (task.status === "Pending") {
       newStatus = "In Progress";
     } else if (task.status === "In Progress") {
       newStatus = "Completed";
+      priority = "Low"; // Automatically set to Low when completed
+      task.priority = priority;
     }
 
     // 📝 Step 3: Update
