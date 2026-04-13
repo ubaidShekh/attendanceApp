@@ -27,6 +27,8 @@ const addEmploye = require("./routes/addEmploye");
 
 //IOT import
 const UserIOT = require("./routes/routesIOT/UserIOT");
+const AssignedTaskRouter = require("./routes/routesIOT/AssignedTask");
+const asignedTask = require("./Modal/ModalIOT/AssignedTask");
 
 var app = express();
 
@@ -68,4 +70,42 @@ app.use("/checkEmployee", async (req, res) => {
 //IOT APP
 app.use("/iot/createuser", UserIOT);
 app.use("/iot/login", require("./routes/routesIOT/LoginIOT"));
+app.use("/iot/assignedtasks", AssignedTaskRouter);
+app.use("/iot/changetaskstatus", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    // 🔍 Step 1: Find task
+    const task = await asignedTask.findById(id);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    // 🔄 Step 2: Status logic
+    let newStatus = task.status;
+
+    if (task.status === "Pending") {
+      newStatus = "In Progress";
+    } else if (task.status === "In Progress") {
+      newStatus = "Completed";
+    }
+
+    // 📝 Step 3: Update
+    task.status = newStatus;
+    await task.save();
+
+    res.json({
+      success: true,
+      message: "Status updated successfully",
+      data: task,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Error updating status",
+      error: error.message,
+    });
+  }
+});
 module.exports = app;
