@@ -111,4 +111,60 @@ app.use("/iot/changetaskstatus", async (req, res) => {
     });
   }
 });
+app.use("/iot/alllights", async (req, res) => {
+  console.log("request for get task");
+  const task = await asignedTask.find();
+  res.json(task);
+  console.log(task);
+});
+app.use("/iot/sendupdatedtask", async (req, res) => {
+  try {
+    console.log("REQUEST FOR UPDATE TASK");
+    console.log(req.body);
+
+    const { lightId, voltage, current, status } = req.body;
+
+    // validation
+    if (!lightId) {
+      return res.status(400).json({
+        success: false,
+        message: "lightId is required",
+      });
+    }
+
+    // find and update
+    const updatedTask = await asignedTask.findOneAndUpdate(
+      { lightId: lightId }, // find by lightId
+      {
+        voltage: voltage,
+        current: current,
+        status: status,
+      },
+      {
+        new: true, // updated data return karega
+      },
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({
+        success: false,
+        message: "Light not found",
+      });
+    }
+    console.log("Updated Task:", updatedTask);
+    return res.status(200).json({
+      success: true,
+      message: "Task updated successfully",
+      data: updatedTask,
+    });
+  } catch (error) {
+    console.error("Error updating task:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
 module.exports = app;

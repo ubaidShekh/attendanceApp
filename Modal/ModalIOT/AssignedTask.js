@@ -12,20 +12,42 @@ const assignedTaskSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    status: {
+    email: {
       type: String,
       required: true,
-      enum: ["Pending", "In Progress", "Completed"],
+      default: "ubaidjmi2022@gmail.com",
+      lowercase: true,
+      trim: true,
+    },
+    voltage: {
+      type: Number,
+      required: true,
+      default: 220, // street light typical AC
+    },
+    current: {
+      type: Number,
+      required: true,
+      default: 0.5, // ampere (example)
+    },
+    status: {
+      type: String,
+      enum: [
+        "Pending",
+        "In Progress",
+        "Completed",
+        "working",
+        "bulb fault",
+        "off",
+      ],
       default: "Pending",
     },
     priority: {
       type: String,
-      required: true,
       enum: ["High", "Medium", "Low"],
       default: "Medium",
     },
     assignedAt: {
-      type: Date, // Date object store karega
+      type: Date,
       required: true,
     },
     description: {
@@ -35,9 +57,9 @@ const assignedTaskSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // createdAt, updatedAt auto add hoga
+    timestamps: true,
+    collection: "assignedtasks",
   },
-  { collection: "AssignedTask" },
 );
 
 const AssignedTask = mongoose.model("AssignedTask", assignedTaskSchema);
