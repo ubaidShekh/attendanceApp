@@ -22,7 +22,7 @@ const assignedTaskSchema = new mongoose.Schema(
     voltage: {
       type: Number,
       required: true,
-      default: 220, // street light typical AC
+      default: 5, // street light typical AC
     },
     current: {
       type: Number,
@@ -31,15 +31,8 @@ const assignedTaskSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: [
-        "Pending",
-        "In Progress",
-        "Completed",
-        "working",
-        "bulb fault",
-        "off",
-      ],
-      default: "Pending",
+      enum: ["In Progress", "Working", "Fault", "Offline"],
+      default: "Offline",
     },
     priority: {
       type: String,
