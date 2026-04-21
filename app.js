@@ -166,5 +166,74 @@ app.use("/iot/sendupdatedtask", async (req, res) => {
     });
   }
 });
+// Add this to your main server file (e.g., server.js or app.js)
 
+app.use("/iot/addlight", async (req, res) => {
+  try {
+    console.log("Received request body:", req.body);
+
+    const { lightId, location, status, voltage, current } = req.body;
+
+    // Validation
+    if (!lightId || !location) {
+      return res.status(400).json({
+        success: false,
+        message: "Light ID and Location are required",
+      });
+    }
+
+    // Check if light already exists
+    const existingLight = await asignedTask.findOne({ lightId: lightId });
+    if (existingLight) {
+      return res.status(409).json({
+        success: false,
+        message: `Light with ID ${lightId} already exists`,
+      });
+    }
+
+    // Create new light document
+    const newLight = new asignedTask({
+      lightId: lightId,
+      location: location,
+      email: "ubaidjmi2022@gmail.com", // Default email as per schema
+      voltage: status === "Working" ? voltage || 220 : 0,
+      current: status === "Working" ? current || 1.5 : 0,
+      status:
+        status === "Working"
+          ? "Working"
+          : status === "Fault"
+            ? "Fault"
+            : "Offline",
+      priority: "Medium", // Default priority
+      assignedAt: new Date(),
+      description: `Light ${lightId} installed at ${location}`,
+    });
+
+    // Save to database
+    const savedLight = await newLight.save();
+
+    console.log("Light added successfully:", savedLight);
+
+    // Return success response
+    res.status(201).json({
+      success: true,
+      message: "Light added successfully",
+      data: {
+        lightId: savedLight.lightId,
+        location: savedLight.location,
+        status: savedLight.status,
+        voltage: savedLight.voltage,
+        current: savedLight.current,
+        assignedAt: savedLight.assignedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error adding light:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
 module.exports = app;
