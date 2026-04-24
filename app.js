@@ -29,6 +29,7 @@ const addEmploye = require("./routes/addEmploye");
 const UserIOT = require("./routes/routesIOT/UserIOT");
 const AssignedTaskRouter = require("./routes/routesIOT/AssignedTask");
 const asignedTask = require("./Modal/ModalIOT/AssignedTask");
+const userIOT = require("./Modal/ModalIOT/UserIOT");
 
 var app = express();
 
@@ -235,5 +236,9 @@ app.use("/iot/addlight", async (req, res) => {
       error: error.message,
     });
   }
+});
+app.use("/iot/fetchAsupervisor", async (req, res) => {
+const user = await userIOT.findOne();
+res.json(user);
 });
 module.exports = app;
