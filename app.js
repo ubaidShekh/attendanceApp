@@ -241,4 +241,101 @@ app.use("/iot/fetchAsupervisor", async (req, res) => {
 const user = await userIOT.findOne();
 res.json(user);
 });
+// Update Light API Endpoint
+app.use("/iot/save-light", async (req, res) => {
+  try {
+    const { id, location, voltage, current, status, priority, description } = req.body;
+    
+    // Validate required fields
+    if (!id) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Light ID is required" 
+      });
+    }
+    
+    // Find and update the light
+    const updatedLight = await asignedTask.findOneAndUpdate(
+      { lightId: id },  // Find by lightId field
+      { 
+       location: location, 
+        voltage: voltage, 
+        current: current, 
+        status: status, 
+        priority: priority, 
+        description: description,
+        updatedAt: new Date()  // Update timestamp
+      },
+      { new: true }  // Return updated document
+    );
+    
+    // Check if light exists
+    if (!updatedLight) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Light not found" 
+      });
+    }
+    
+     console.log("Light updated successfully:", updatedLight);
+    // Send success response
+    res.status(200).json({
+      success: true,
+      message: "Light updated successfully",
+      data: updatedLight
+    });
+   
+    
+  } catch (error) {
+    console.error("Error updating light:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Internal server error",
+      error: error.message 
+    });
+  }
+});
+// Delete Light API Endpoint
+app.use("/iot/delete-light", async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log(id)
+    
+    // Validate required fields
+    if (!id) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Light ID is required" 
+      });
+    }
+    
+    // Find and delete the light
+    const deletedLight = await asignedTask.findOneAndDelete({ lightId: id });
+    
+    // Check if light exists
+    if (!deletedLight) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Light not found" 
+      });
+    }
+    
+    console.log("Light deleted successfully:", deletedLight);
+    
+    // Send success response
+    res.status(200).json({
+      success: true,
+      message: "Light deleted successfully",
+      data: deletedLight
+    });
+    
+  } catch (error) {
+    console.error("Error deleting light:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Internal server error",
+      error: error.message 
+    });
+  }
+});
 module.exports = app;
