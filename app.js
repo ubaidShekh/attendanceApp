@@ -24,6 +24,11 @@ const attendanceArabicRouter = require("./routes/AttendanceArabic");
 const CheckAttendanceArabic = require("./routes/checkAttendanceArabic");
 const verifyFaceRouter = require("./routes/verifyFace");
 const addEmploye = require("./routes/addEmploye");
+const addEmployModel = require("./Modal/addEmploye");
+
+//clicker
+const clicker = require("./routes/clicker/clicker")
+
 
 //IOT import
 const UserIOT = require("./routes/routesIOT/UserIOT");
@@ -47,7 +52,12 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+
 app.use("/", indexRouter);
+
+//clicker
+
+app.use("/clicker",clicker);
 app.use("/users", usersRouter);
 app.use("/register", createuserRouter);
 app.use("/login", loginRouter);
@@ -66,6 +76,19 @@ app.use("/addEmploye", addEmploye);
 app.use("/checkEmployee", async (req, res) => {
   const { EmployeeId } = req.body;
   console.log("🔍 Checking EmployeeId:", EmployeeId);
+  try{
+    const employee = await addEmployModel.findOne({ EmployeeId: EmployeeId });
+    if (employee) {
+      console.log("✅ Employee found:", employee);
+      res.json({ status: true, employee });
+    } else {
+      console.log("❌ Employee not found with EmployeeId:", EmployeeId);
+      res.json({ exists: false });
+    }
+  } catch (error) {
+    console.error("Error checking employee:", error);
+    res.status(500).json({ exists: false, error: error.message });
+  }
 });
 
 //IOT APP
