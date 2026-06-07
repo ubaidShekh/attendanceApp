@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const ClickerUser = require('../../Modal/clickerModal/register');
 
 // POST /clicker/login - Login
-router.post('/login', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { email, password } = req.body;
 
