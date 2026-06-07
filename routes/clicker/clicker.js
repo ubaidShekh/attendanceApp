@@ -1,19 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const ClickerUser = require('../../Modal/clickerModal/register'); // adjust path to your model
+const ClickerUser = require('../../Modal/clickerModal/register');
 
-// POST /api/register - save user data
+// POST /clicker - Registration with expireDay
 router.post('/', async (req, res) => {
   try {
-    const { ApplicationID, email, password } = req.body;
+    const { ApplicationID, email, password, expireDay } = req.body;
 
-    // Basic validation
-    if (!ApplicationID || !email || !password) {
-      return res.status(400).json({ error: 'ApplicationID, email and password are required' });
+    // Basic validation (expireDay added)
+    if (!ApplicationID || !email || !password || expireDay === undefined) {
+      return res.status(400).json({ 
+        error: 'ApplicationID, email, password and expireDay are required' 
+      });
     }
 
-    // Check if user already exists (by ApplicationID or email)
+    // Validate expireDay is a number between 1 and 365
+    const days = Number(expireDay);
+    if (isNaN(days) || days < 1 || days > 365) {
+      return res.status(400).json({ error: 'expireDay must be a number between 1 and 365' });
+    }
+
+    // Check existing user
     const existingUser = await ClickerUser.findOne({
       $or: [{ ApplicationId: ApplicationID }, { email: email }]
     });
@@ -25,22 +33,23 @@ router.post('/', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new user document
+    // Create new user document including expireDay
     const newUser = new ClickerUser({
       ApplicationId: ApplicationID,
       email: email,
       password: hashedPassword,
+      expireDay: days,
     });
 
-    // Save to database
     await newUser.save();
 
-    // Respond with success (do not send back password)
+    // Respond without password
     res.status(201).json({
       message: 'User registered successfully',
       user: {
         ApplicationId: newUser.ApplicationId,
         email: newUser.email,
+        expireDay: newUser.expireDay,
       }
     });
   } catch (error) {
