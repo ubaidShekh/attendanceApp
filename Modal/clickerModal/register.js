@@ -16,19 +16,22 @@ const userSchema = new mongoose.Schema({
   },
   expireDay: {
     type: Number,
-    required: [true, "Expire day is required"],
-    min: 1,
-    max: 365, // optional validation
-    default: 30, // optional default
+    required: false,
+    default: 30,
   },
 });
 
-// Password hashing middleware (optional, but recommended)
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+// ✅ Correct pre-save middleware for async/await (no next parameter)
+userSchema.pre('save', async function() {
+  // Only hash the password if it has been modified (or is new)
+  if (!this.isModified('password')) return;
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  } catch (error) {
+    throw error; // Mongoose will handle the error
+  }
 });
 
 module.exports = mongoose.model("ClickerUser", userSchema);

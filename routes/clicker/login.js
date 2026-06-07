@@ -22,11 +22,13 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    // ✅ Include expireDay in the response
     res.status(200).json({
       message: 'Login successful',
       user: {
         ApplicationId: user.ApplicationId,
         email: user.email,
+        expireDay: user.expireDay,   // added this line
       }
     });
   } catch (error) {
