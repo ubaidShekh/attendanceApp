@@ -28,6 +28,7 @@ const addEmployModel = require("./Modal/addEmploye");
 
 //clicker
 const clicker = require("./routes/clicker/clicker")
+const loginClicker = require("./routes/clicker/login")
 
 
 //IOT import
@@ -58,6 +59,7 @@ app.use("/", indexRouter);
 //clicker
 
 app.use("/clicker",clicker);
+app.use("/clickerLogin",loginClicker);
 app.use("/users", usersRouter);
 app.use("/register", createuserRouter);
 app.use("/login", loginRouter);
